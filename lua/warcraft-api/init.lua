@@ -1,6 +1,6 @@
 local M = {}
 
-function M.setup()
+M.setup = function()
   require('warcraft-api.data').setup()
 end
 

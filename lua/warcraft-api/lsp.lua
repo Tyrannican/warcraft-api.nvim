@@ -1,48 +1,32 @@
+--@class warcraft-api.Lsp
 local M = {}
 
 local data = require('warcraft-api.data')
 local util = require('warcraft-api.util')
 
-function M.setup()
-end
+--@type table<number,number>
+M.lsp_clients = {}
 
-function M.load_client()
-  local client = vim.lsp.get_clients({ name = "lua_ls" })[1]
-  if not client then
-    util.notify({
-      once = true,
-      level = vim.log.levels.WARN,
-      message = "LuaLS LSP not detected!",
-    })
+--@type table<number, table>
+M.cached_lsp_settings = {}
+
+--@param client vim.lsp.Client
+M.attach = function(client)
+  if M.lsp_clients[client.id] then
     return
   end
 
-  M.client = client
+  M.lsp_clients[client.id] = client.id
+  M.cached_lsp_settings[client.id] = client.settings or {}
 end
 
-function M.cache_lsp_settings()
-  if not M.client then
-    return
-  end
-
-  M.cached_settings = M.client.settings or {}
-end
-
-function M.enable_api()
-  M.load_client()
-  if not M.client then
-    return
-  end
-
-  data.ensure_installed()
-  M.cache_lsp_settings()
-
-  local client = M.client
+--@param client vim.lsp.Client
+M.add_api_bindings = function(client)
   local path = data.annotations
   local settings = vim.deepcopy(client.settings or {})
   local library = vim.tbl_get(settings, "Lua", "workspace", "library") or {}
 
-  if not vim.tbl_contains(library, path) then
+  if not vim.tbl_contains(library, path.filename) then
     table.insert(library, path.filename)
   end
 
@@ -61,39 +45,46 @@ function M.enable_api()
   if not vim.deep_equal(client.settings, settings) then
     client.settings = settings
   end
-
-  M.update()
-  util.notify({ message = "Enabled Api" })
 end
 
-function M.disable_api()
-  local client = M.client
-  if not client then
-    return
-  end
+--@param client vim.lsp.Client
+M.update_buffers = function(client)
+  local buffers = vim.api.nvim_list_bufs()
 
-  client.settings = M.cached_settings
-  M.update()
-  util.notify({ message = "Disabled Api" })
+  for _, bufnr in ipairs(buffers) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and vim.lsp.buf_is_attached(bufnr, client.id) then
+      vim.api.nvim_set_current_buf(bufnr)
+      vim.cmd("write")
+      vim.cmd("edit")
+    end
+  end
 end
 
-function M.update()
-  local client = M.client
-  if not client then
-    return
+M.enable_api = function()
+  for _, client in ipairs(vim.lsp.get_clients({ name = "lua_ls" })) do
+    M.add_api_bindings(client)
+    M.update(client)
+    M.update_buffers(client)
   end
 
+  util.notify({ message = "Enabled Warcraft API" })
+end
+
+M.disable_api = function()
+  for _, client in ipairs(vim.lsp.get_clients({ name = "lua_ls" })) do
+    client.settings = M.cached_lsp_settings[client.id]
+    M.update(client)
+    M.update_buffers(client)
+  end
+
+  util.notify({ message = "Disabled Warcraft API" })
+end
+
+--@param client vim.lsp.Client
+M.update = function(client)
   client.notify("workspace/didChangeConfiguration", {
     settings = client.settings
   })
-
-  -- Reload all open Lua buffers to refresh the workspace
-  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].filetype == "lua" then
-      vim.lsp.buf_detach_client(bufnr, client.id)
-      vim.lsp.buf_attach_client(bufnr, client.id)
-    end
-  end
 end
 
 return M

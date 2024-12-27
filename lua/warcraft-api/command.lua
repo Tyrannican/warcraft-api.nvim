@@ -1,13 +1,16 @@
+--@class warcraft-api.Command
 local M = {}
 
-local lsp = require('warcraft-api.lsp')
 local data = require('warcraft-api.data')
 local util = require('warcraft-api.util')
+local lsp = require('warcraft-api.lsp')
 
-function M.run_command(opts)
+--@param opts string[]
+M.run_command = function(opts)
   local arg = opts.args
 
   if arg == "enable" then
+    data.ensure_installed()
     lsp.enable_api()
   elseif arg == "disable" then
     lsp.disable_api()
