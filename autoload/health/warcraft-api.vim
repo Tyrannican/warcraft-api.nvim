@@ -1,3 +1,3 @@
-function! health#warcraft-api#check()
+function! health#warcraftapi#check()
   lua require 'warcraft-api.health'.check()
 endfunction
