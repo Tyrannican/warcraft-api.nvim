@@ -45,6 +45,26 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 }
 ```
 
+You then run the setup function is whatever way you deem appropriate
+
+Example:
+
+```lua
+require('warcraft-api').setup()
+```
+
+[lazy.nvim](https://github.com/folke/lazy.nvim) example
+
+```lua
+{
+    'tyrannican/warcraft-api',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+    config = function()
+        require('warcraft-api').setup()
+    end
+}
+```
+
 ### Running checkhealth
 
 Run `:checkhealth warcraft-api` to ensure everything is installed correctly!
