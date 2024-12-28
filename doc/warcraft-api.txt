@@ -1,0 +1,27 @@
+=================================================================================
+INTRODUCTION                                                    *warcraft-api.nvim*
+
+warcraft-api.nvim is a plugin which adds the World of Warcraft Lua API reference
+to your LSP (lua_ls only for now).
+
+This plugin downloads the API bindings from
+`https://github.com/Ketho/vscode-wow-api` and simply points the LSP clients to
+the definitions.
+It extends your current LSP settings with the new library path and restores
+the old settings when not in use so as not to affect your global settings.
+
+Full credit to `https://github.com/Ketho` for the hard work they have put in.
+
+Getting started:
+  1. Run `:checkhealth warcraft-api` to ensure everything is installed
+  2. Run `:WarcraftApi enable` in your WoW addon project to enable the API
+  bindings
+    2.1 This will download the API definitions and point the LSP to them
+  3. Run `:WarcraftApi disable` to disable the plugin in the current project
+  4. Run `:WarcraftApi update` to update the API definitions to the latest
+  version
+
+
+
+
+vim:tw=78:ts=8:ft=help:norl:
