@@ -17,21 +17,21 @@ Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```viml
 Plug 'nvim-lua/plenary.nvim'
-Plug 'tyrannican/warcraft-api.nvim'
+Plug 'Tyrannican/warcraft-api.nvim'
 ```
 
 Using [dein](https://github.com/Shougo/dein.vim)
 
 ```viml
 call dein#add('nvim-lua/plenary.nvim')
-call dein#add('tyrannican/warcraft-api.nvim')
+call dein#add('Tyrannican/warcraft-api.nvim')
 ```
 
 Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
 use {
-    'tyrannican/warcraft-api',
+    'Tyrannican/warcraft-api.nvim',
     requires = { { 'nvim-lua/plenary.nvim' } }
 }
 ```
@@ -40,7 +40,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 {
-    'tyrannican/warcraft-api',
+    'Tyrannican/warcraft-api.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' }
 }
 ```
@@ -57,8 +57,8 @@ require('warcraft-api').setup()
 
 ```lua
 {
-    'tyrannican/warcraft-api',
-    dependencies = { 'nvim-lua/plenary.nvim' }
+    'Tyrannican/warcraft-api.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
         require('warcraft-api').setup()
     end
